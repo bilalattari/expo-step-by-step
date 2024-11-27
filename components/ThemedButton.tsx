@@ -1,55 +1,58 @@
+import React, { ReactNode } from "react";
 import {
   TouchableOpacity,
   type TouchableOpacityProps,
   StyleSheet,
 } from "react-native";
-import { useThemeColor } from "@/hooks/useThemeColor";
-import React from "react";
 import { ThemedText } from "./ThemedText";
 
 export type ThemedButtonProps = TouchableOpacityProps & {
-  txt?: string;
   bgColor?: string;
   txtColor?: string;
   my?: number;
+  mx?: number;
+  txt: string;
+  icon?: ReactNode;
 };
 
-export function ThemedButton({
-  style,
-  txt,
+export const ThemedButton = ({
   bgColor,
   txtColor,
   my = 0,
+  mx = 0,
+  txt = "Button",
+  style,
+  icon,
   ...rest
-}: ThemedButtonProps) {
+}: ThemedButtonProps) => {
   return (
     <TouchableOpacity
-      activeOpacity={0.8}
       style={[
-        styles.default,
-        my ? { marginVertical: my } : undefined,
+        styles.btnContainer,
         bgColor && { backgroundColor: bgColor },
+        mx ? { marginHorizontal: mx } : undefined,
+        my ? { marginVertical: my } : undefined,
         style,
       ]}
       {...rest}
     >
-      <ThemedText
-        type="defaultSemiBold"
-        style={[{ color: txtColor ? txtColor : "#fff" }]}
-      >
+      {icon && icon}
+      <ThemedText style={{ color: txtColor ? txtColor : "#fff" }}>
         {txt}
       </ThemedText>
     </TouchableOpacity>
   );
-}
+};
 
 const styles = StyleSheet.create({
-  default: {
-    height: 45,
+  btnContainer: {
+    height: 50,
     marginHorizontal: 20,
-    backgroundColor: "#009ce0",
     justifyContent: "center",
+    flexDirection: "row",
+    gap: 20,
     alignItems: "center",
+    backgroundColor: "#9900ef",
     borderRadius: 7,
   },
 });
