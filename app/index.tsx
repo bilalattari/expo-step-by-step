@@ -13,6 +13,20 @@ export default function WelcomeScreen() {
       </ThemedText>
 
       <ThemedButton
+        onPress={() => router.push("/changeTheme")}
+        bgColor="#000"
+        my={10}
+        txt="Change Theme App"
+      />
+
+      <ThemedButton
+        onPress={() => router.push("/flatlist")}
+        bgColor="green"
+        my={10}
+        txt="Learning Flatlist"
+      />
+
+      <ThemedButton
         my={10}
         onPress={() => Alert.alert("Clicked ON Google Login")}
         bgColor="#fff"
@@ -27,7 +41,7 @@ export default function WelcomeScreen() {
         my={10}
         txt="Continue with Apple"
       />
-      <ThemedButton bgColor="#000" my={10} txt="Continue with X" />
+
       <ThemedButton my={10} txt="Login to Continue" />
     </View>
   );
