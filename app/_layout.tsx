@@ -25,7 +25,7 @@ export default function RootLayout() {
     }
   }, [loaded]);
 
-  if (!loaded) {
+  if (!loaded) {  
     return null;
   }
 
