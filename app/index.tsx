@@ -4,6 +4,7 @@ import { Link, router } from "expo-router";
 import React from "react";
 import { Alert, Text, View } from "react-native";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
+import Entypo from "@expo/vector-icons/Entypo";
 
 export default function WelcomeScreen() {
   return (
@@ -11,6 +12,14 @@ export default function WelcomeScreen() {
       <ThemedText type="title" align="center">
         Welcome to Our Tutorial
       </ThemedText>
+
+      <ThemedButton
+        onPress={() => router.push("/imagepicker")}
+        bgColor="#000"
+        my={10}
+        icon={<Entypo name="image" size={24} color="white" />}
+        txt="Learning Image Picker"
+      />
 
       <ThemedButton
         onPress={() => router.push("/(tabs)")}
