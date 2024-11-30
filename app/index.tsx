@@ -13,6 +13,13 @@ export default function WelcomeScreen() {
       </ThemedText>
 
       <ThemedButton
+        onPress={() => router.push("/(tabs)")}
+        bgColor="#9900ef"
+        my={10}
+        txt="Learning Tabs"
+      />
+
+      <ThemedButton
         onPress={() => router.push("/changeTheme")}
         bgColor="#000"
         my={10}

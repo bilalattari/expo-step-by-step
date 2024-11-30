@@ -1,68 +1,156 @@
+import { ThemedButton } from "@/components/ThemedButton";
 import { ThemedText } from "@/components/ThemedText";
+import { ThemedView } from "@/components/ThemedView";
 import { Product } from "@/constants/Interface";
 import { fetchProducts } from "@/store/features/productsSlice";
 import { RootState } from "@/store/store";
-import React, { useEffect } from "react";
-import { ActivityIndicator, FlatList, Image, View } from "react-native";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useCallback, useEffect, useState } from "react";
+import {
+  ActivityIndicator,
+  FlatList,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+  RefreshControl,
+} from "react-native";
+//1.Vertical List
+//2.Horizontal List
+//3.Column wise list
+//4.Pagination
+//5.Pull to Refresh
 
 export default function FlatlistLearning() {
-  const { products, status } = useSelector(
-    (state: RootState) => state.products
-  );
-  const dispatch = useDispatch();
+  const [products, setProducts] = useState<Product[]>([]);
+  const [total, setTotal] = useState<number>(0);
+  const [categories, setCategories] = useState([]);
+  const [chosenCategory, setChosenCategory] = useState<string>("all");
+  const [limit, setLimit] = useState<number>(20);
+  const [refreshing, setRefreshing] = useState<boolean>(false);
 
   useEffect(() => {
-    dispatch(fetchProducts());
+    getCategories();
   }, []);
 
-  if (status == "pending") {
-    return (
-      <ActivityIndicator
-        size={"large"}
-        style={{
-          alignSelf: "center",
-          marginVertical: 20,
-        }}
-      />
+  useEffect(() => {
+    getProducts();
+  }, [limit, chosenCategory]);
+
+  async function getCategories() {
+    let categories: any = await fetch(
+      `https://dummyjson.com/products/categories`
     );
+    categories = await categories.json();
+    setCategories(categories);
   }
+
+  async function getProducts() {
+    let url =
+      chosenCategory && chosenCategory != "all"
+        ? `https://dummyjson.com/products/category/${chosenCategory}`
+        : `https://dummyjson.com/products`;
+    let products: any = await fetch(`${url}?limit=${limit}`);
+    products = await products.json();
+    setProducts(products.products);
+    setTotal(products.total);
+    setRefreshing(false);
+  }
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    getProducts();
+  }, []);
+
+  console.log("products=>", products.length);
+  console.log("categories=>", categories.length);
+  console.log("total=>", total);
+
   return (
-    <View style={{ flex: 1 }}>
+    <ThemedView style={{ flex: 1, padding: 10 }}>
       <FlatList
-        data={products}
-        keyExtractor={(data: Product) => `${data.id}`}
-        numColumns={2}
-        columnWrapperStyle={{ gap: 10 }}
-        contentContainerStyle={{ marginHorizontal: 10 }}
-        renderItem={({ item, index }: { item: Product; index: number }) => {
-          return (
-            <View
-              key={index}
-              style={{
-                flex: 1,
-                borderWidth: 1,
-                borderColor: "#ccc",
-                marginBottom: 10,
-                borderRadius: 8,
+        style={{ flex: 1 }}
+        stickyHeaderIndices={[0]}
+        showsVerticalScrollIndicator={false}
+        ListHeaderComponent={
+          <ThemedView>
+            <FlatList
+              style={{ marginBottom: 20 }}
+              data={[{ slug: "all", name: "All" }, ...categories]}
+              horizontal={true}
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{ gap: 8 }}
+              keyExtractor={(data) => data.slug}
+              renderItem={({ item }) => {
+                let isChosen = item.slug == chosenCategory;
+                return (
+                  <ThemedButton
+                    activeOpacity={0.9}
+                    onPress={() => setChosenCategory(item.slug)}
+                    bgColor={isChosen ? "#000" : "#fff"}
+                    txtColor={isChosen ? "#fff" : "#000"}
+                    style={styles.chip}
+                    txt={item.name}
+                  />
+                );
               }}
-            >
+            />
+          </ThemedView>
+        }
+        data={products}
+        numColumns={2}
+        onEndReachedThreshold={0.8}
+        onEndReached={() => {
+          if (limit < total) {
+            setLimit(limit + 20);
+          }
+        }}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+        columnWrapperStyle={{ gap: 10 }}
+        keyExtractor={(data) => data.id.toString()}
+        renderItem={({ item }) => {
+          return (
+            <ThemedView style={styles.card}>
               <Image
                 source={{ uri: item.thumbnail }}
-                style={{ height: 200, resizeMode: "cover" }}
+                style={{ height: 150, resizeMode: "contain" }}
               />
-              <View style={{ padding: 10, gap: 6 }}>
-                <ThemedText type="subtitle" numberOfLines={1}>
+              <View style={styles.info}>
+                <ThemedText numberOfLines={1} type="subtitle">
                   {item.title}
                 </ThemedText>
+                {/* <ThemedText type="defaultSemiBold">{item.category}</ThemedText> */}
                 <ThemedText type="default" numberOfLines={2}>
                   {item.description}
                 </ThemedText>
               </View>
-            </View>
+            </ThemedView>
           );
         }}
       />
-    </View>
+    </ThemedView>
   );
 }
+
+const styles = StyleSheet.create({
+  chip: {
+    marginHorizontal: 0,
+    borderColor: "grey",
+    borderWidth: 1,
+    paddingHorizontal: 10,
+    borderRadius: 5,
+  },
+  card: {
+    padding: 5,
+    flex: 1,
+    borderColor: "grey",
+    borderWidth: 1,
+    marginVertical: 10,
+    borderRadius: 5,
+  },
+  info: {
+    padding: 5,
+    gap: 5,
+  },
+});

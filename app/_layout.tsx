@@ -36,6 +36,7 @@ export default function RootLayout() {
         <Stack.Screen name="login" />
         <Stack.Screen name="changeTheme" />
         <Stack.Screen name="flatlist" />
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       </Stack>
     </Provider>
   );

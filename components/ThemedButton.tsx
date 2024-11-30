@@ -19,7 +19,7 @@ export const ThemedButton = ({
   bgColor,
   txtColor,
   my = 0,
-  mx = 0,
+  mx,
   txt = "Button",
   style,
   icon,
@@ -30,7 +30,7 @@ export const ThemedButton = ({
       style={[
         styles.btnContainer,
         bgColor && { backgroundColor: bgColor },
-        mx ? { marginHorizontal: mx } : undefined,
+        mx != undefined ? { marginHorizontal: mx } : undefined,
         my ? { marginVertical: my } : undefined,
         style,
       ]}
